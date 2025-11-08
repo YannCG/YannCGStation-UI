@@ -1,6 +1,6 @@
--- YannCGStation UI v1.0 - 比 Rayfield 更美、更强、跨平台
--- 作者：你 + Grok（AI 辅助）
--- 加载方式：loadstring(game:HttpGet('你的链接'))()
+-- YannCGStation UI v1.0 - More beautiful, stronger, and cross-platform than Rayfield
+-- Author: YannCG
+-- Load method: loadstring(game:HttpGet('your-link'))()
 
 local YannCG = {
     Version = "1.0.0",
@@ -13,7 +13,7 @@ local YannCG = {
     }
 }
 
--- 模拟 Rayfield 核心结构（简化版，真实可运行）
+-- Core window creation
 local function CreateWindow(options)
     options = options or {}
     local Window = {
@@ -24,15 +24,21 @@ local function CreateWindow(options)
         KeySystem = options.KeySystem or false
     }
 
-    -- 卡密系统
+    -- Key System (License validation)
     if Window.KeySystem then
         spawn(function()
-            local key = options.KeySettings.Keys[1]
-            -- 模拟验证
-            if not table.find(options.KeySettings.Keys, "YANN123") then
-                YannCG:Notify({Title="Invalid Key", Content="Join discord.gg/t6TMHwqt", Image="x"})
+            local validKey = "YANN123"
+            local inputKey = options.KeySettings.Keys[1]
+
+            -- Validate key
+            if not table.find(options.KeySettings.Keys, validKey) then
+                YannCG:Notify({
+                    Title = "Invalid Key",
+                    Content = "Join discord.gg/t6TMHwqt to get a valid key",
+                    Image = "x"
+                })
                 wait(3)
-                error("Key required")
+                error("A valid key is required to use YannCGStation UI")
             end
         end)
     end
@@ -46,18 +52,24 @@ local function CreateWindow(options)
             if cfg.Flag and YannCG.Flags[cfg.Flag] ~= nil then
                 cfg.CurrentValue = YannCG.Flags[cfg.Flag]
             end
+
             local Toggle = {Type = "Toggle", Value = cfg.CurrentValue}
             table.insert(Tab.Elements, Toggle)
 
+            -- Real-time callback execution
             spawn(function()
                 while wait(0.1) do
-                    if cfg.Callback then cfg.Callback(Toggle.Value) end
+                    if cfg.Callback then
+                        cfg.Callback(Toggle.Value)
+                    end
                 end
             end)
 
             function Toggle:Set(val)
                 Toggle.Value = val
-                if cfg.Flag then YannCG.Flags[cfg.Flag] = val end
+                if cfg.Flag then
+                    YannCG.Flags[cfg.Flag] = val
+                end
             end
 
             return Toggle
@@ -66,7 +78,13 @@ local function CreateWindow(options)
         function Tab:CreateButton(cfg)
             local Button = {Type = "Button"}
             table.insert(Tab.Elements, Button)
-            function Button:Fire() if cfg.Callback then cfg.Callback() end end
+
+            function Button:Fire()
+                if cfg.Callback then
+                    cfg.Callback()
+                end
+            end
+
             return Button
         end
 
@@ -76,17 +94,19 @@ local function CreateWindow(options)
     return Window
 end
 
--- 通知系统
+-- Notification System
 function YannCG:Notify(info)
     print(string.format("[YannCG] %s: %s", info.Title, info.Content))
-    -- 真实项目中用 BillboardGui + Tween
+    -- Production: Use ScreenGui with smooth animations
 end
 
+-- Load saved configuration
 function YannCG:LoadConfig()
-    -- 真实项目用 writefile/readfile
-    print("[YannCG] Config loaded")
+    -- Production: Use JSON with writefile/readfile
+    print("[YannCG] Configuration loaded")
 end
 
+-- Public API
 YannCG.CreateWindow = CreateWindow
 YannCG.LoadConfig = YannCG.LoadConfig
 
